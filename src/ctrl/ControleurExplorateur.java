@@ -48,7 +48,7 @@ public final class ControleurExplorateur {
     }
 
     /**
-     * inplémentatino Service indexation Fifhier
+     * inplémentatino Service indexation Fifhier 
      * 
      */
     private void IndexationFichiers(){
