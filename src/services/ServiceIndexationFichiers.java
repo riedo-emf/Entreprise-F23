@@ -18,7 +18,7 @@ public class ServiceIndexationFichiers {
     }
 
     public ArrayList<Fichier> initialiseFiles(Dossier dossier){
-        ArrayList<Element> elements = (ArrayList)dossier.getContenu();
+        ArrayList<Element> elements = new ArrayList<>(dossier.getContenu());
         ArrayList<Fichier> retour = new ArrayList<>();
 
         for (Element element : elements) {
@@ -28,7 +28,7 @@ public class ServiceIndexationFichiers {
                     retour.add(fichier);
                 }
             }
-            else{
+            else if(element instanceof Fichier){
                 retour.add((Fichier)element);
             }
         }
