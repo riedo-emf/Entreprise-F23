@@ -6,6 +6,7 @@ import models.*;
 import services.ComparateurDatePuisTaille;
 import services.ComparateurTaille;
 import views.VueExplorateur;
+import services.ComparateurTypePuisNom;
 
 /**
  * Coordonne les événements de la vue, la navigation, les tris et les actions du
@@ -20,7 +21,7 @@ public final class ControleurExplorateur {
 
     private Dossier courant;
 
-    // Référence du media en cours de lecture; null si aucun. 
+    // Référence du media en cours de lecture; null si aucun.
     // type. Ce type devra avoir une méthode "arreter()", "jouer()" et
     // "getDureeSecondes()"
     private IJouable enLecture;
@@ -66,7 +67,7 @@ public final class ControleurExplorateur {
         Element element = vue.getSelection();
 
         boolean imprimable = element instanceof IImprimable;
-        boolean estUnDossier = element instanceof Dossier; 
+        boolean estUnDossier = element instanceof Dossier;
 
         vue.afficherActions(imprimable, estUnDossier);
 
@@ -92,7 +93,7 @@ public final class ControleurExplorateur {
      * Ouvre la sélection si elle désigne un dossier.
      */
     private void ouvrir() {
-        
+
         if (vue.getSelection() instanceof Dossier dossier) {
             courant = dossier;
             afficher();
@@ -105,7 +106,7 @@ public final class ControleurExplorateur {
     private void imprimer() {
         Element e = vue.getSelection();
         if (e instanceof IImprimable) {
-            
+
             IImprimable imprimable = (IImprimable) e;
             vue.afficherStatut(imprimable.imprimer());
         }
@@ -116,9 +117,9 @@ public final class ControleurExplorateur {
      */
     private void jouer() {
         Element e = vue.getSelection();
-        
+
         if (e instanceof IJouable) {
-            
+
             IJouable jouable = (IJouable) e;
             enLecture = jouable;
             vue.afficherStatut(jouable.jouer());
@@ -131,13 +132,14 @@ public final class ControleurExplorateur {
     private void arreter() {
         Element e = vue.getSelection();
         if (e instanceof IJouable) {
-            
+
             IJouable jouable = (IJouable) e;
             vue.afficherStatut(jouable.arreter());
             enLecture = null;
         }
     }
 
+    
     /**
      * Trie une copie du contenu, réinitialise la sélection et actualise le chemin.
      * Le contenu du modèle conserve son ordre d'insertion.
@@ -154,6 +156,10 @@ public final class ControleurExplorateur {
             case 2:
                 comparateur = new ComparateurDatePuisTaille();
                 break;
+            case 3:
+                // Type (sans casse), puis nom (sans casse) à type égal
+                comparateur = new ComparateurTypePuisNom();
+                break;
             default:
                 comparateur = Comparator.naturalOrder();
         }
@@ -168,4 +174,5 @@ public final class ControleurExplorateur {
         vue.afficherChemin(emplacement + "/", courant.getParent() != null);
         actualiserActions();
     }
+
 }
