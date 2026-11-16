@@ -40,18 +40,22 @@ public class ServiceIndexationFichiers {
     public void initialiseList(ArrayList<Fichier> listFiles) {
 
         for (Fichier f1 : listFiles) {
-            for (String type : filesList.keySet()) {
-                if (f1.getType() == type) {
-                    filesList.get(type).add(f1);
-                }
+            //for (String type : filesList.keySet()) {
+                if (f1 != null) {
+                    String type = f1.getType();
+                    if (filesList.containsKey(f1.getType())) {
+                        filesList.get(type).add(f1);
+                    }
 
-                else {
-                    ArrayList<Fichier> test = new ArrayList<>();
-                    test.add(f1);
-                    filesList.put(type, test);
-                }
+                    else {
+                        ArrayList<Fichier> test = new ArrayList<>();
+                        test.add(f1);
+                        filesList.put(type, test);
+                    }
+                    }
 
-            }
+
+            //}
         }
 
     }
