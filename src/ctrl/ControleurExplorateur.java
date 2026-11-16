@@ -5,6 +5,7 @@ import java.util.Comparator;
 import models.*;
 import services.ComparateurDatePuisTaille;
 import services.ComparateurTaille;
+import services.ExporteurElementTexte;
 import views.VueExplorateur;
 
 /**
@@ -14,20 +15,19 @@ import views.VueExplorateur;
  * des fichiers.
  */
 public final class ControleurExplorateur {
-
     // Référence de la vue
     private final VueExplorateur vue;
 
     private Dossier courant;
 
-    // Référence du media en cours de lecture; null si aucun. 
+    // Référence du media en cours de lecture; null si aucun.
     // type. Ce type devra avoir une méthode "arreter()", "jouer()" et
     // "getDureeSecondes()"
     private IJouable enLecture;
 
     /**
      * Relie les callbacks de la vue et affiche le dossier initial.
-     * À appeler sur le thread de gestion des événements Swing.
+     * À appeler le thread de gestion des événements Swing.
      *
      * @param vue    vue non nulle à piloter
      * @param racine dossier initial non nul
@@ -42,7 +42,26 @@ public final class ControleurExplorateur {
         vue.surImprimer(this::imprimer);
         vue.surJouer(this::jouer);
         vue.surArreter(this::arreter);
+        vue.surExporter(this::exporter);
         afficher();
+    }/*
+      * Der Konstruktor initialisiert den Controller, speichert die View und das
+      * Wurzelverzeichnis, verbindet alle Buttons bzw.
+      * Events mit den entsprechenden Methoden (ouvrir, imprimer, exporter usw.) und
+      * zeigt anschliessend den Inhalt des aktuellen
+      * Verzeichnisses mit afficher() an.
+      */
+
+    private void exporter() {
+        Element e = vue.getSelection(); // Récupèrer l'élément que l'utilisateur sélectionne
+        // Hier wird das aktuell ausgewählte Element aus der Ansicht geholt und in der
+        // Variable e gespeichert.
+
+        IExporteur<Element> exportable = new ExporteurElementTexte(); // Hier wird ein Objekt der Klasse
+                                                                      // ExporteurElementTexte erstellt.
+        vue.afficherStatut(exportable.exporter(e)); // Die Methode exportiert das Element e und gibt normalerweise eine
+                                                    // Meldung zurück
+
     }
 
     /**
@@ -66,8 +85,9 @@ public final class ControleurExplorateur {
         Element element = vue.getSelection();
 
         boolean imprimable = element instanceof IImprimable;
-        boolean estUnDossier = element instanceof Dossier; 
-
+        boolean estUnDossier = element instanceof Dossier;
+        boolean estExportable = !(element instanceof Dossier);
+        vue.afficherExportDisponible(estExportable);
         vue.afficherActions(imprimable, estUnDossier);
 
         if (element instanceof IJouable jouable) {
@@ -92,7 +112,7 @@ public final class ControleurExplorateur {
      * Ouvre la sélection si elle désigne un dossier.
      */
     private void ouvrir() {
-        
+
         if (vue.getSelection() instanceof Dossier dossier) {
             courant = dossier;
             afficher();
@@ -105,7 +125,7 @@ public final class ControleurExplorateur {
     private void imprimer() {
         Element e = vue.getSelection();
         if (e instanceof IImprimable) {
-            
+
             IImprimable imprimable = (IImprimable) e;
             vue.afficherStatut(imprimable.imprimer());
         }
@@ -116,9 +136,9 @@ public final class ControleurExplorateur {
      */
     private void jouer() {
         Element e = vue.getSelection();
-        
+
         if (e instanceof IJouable) {
-            
+
             IJouable jouable = (IJouable) e;
             enLecture = jouable;
             vue.afficherStatut(jouable.jouer());
@@ -131,7 +151,7 @@ public final class ControleurExplorateur {
     private void arreter() {
         Element e = vue.getSelection();
         if (e instanceof IJouable) {
-            
+
             IJouable jouable = (IJouable) e;
             vue.afficherStatut(jouable.arreter());
             enLecture = null;
