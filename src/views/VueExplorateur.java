@@ -38,7 +38,7 @@ public final class VueExplorateur extends JFrame {
     private final JPanel lecteur = new JPanel(new FlowLayout(FlowLayout.LEFT));
     private ServiceFormatage format = new ServiceFormatage();
     private LongFunction<String> formateurTaille = taille -> format.formaterTaille(taille);
-    private IntFunction<String> formateurDuree = duree -> duree + " secondes";
+    private IntFunction<String> formateurDuree = duree -> format.formaterDuree(duree);
 
     /** Construit la fenêtre et ses composants. */
     public VueExplorateur() {

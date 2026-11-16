@@ -5,6 +5,7 @@ import java.util.Comparator;
 import models.*;
 import services.ComparateurDatePuisTaille;
 import services.ComparateurTaille;
+import services.ServiceFormatage;
 import views.VueExplorateur;
 
 /**
@@ -24,6 +25,7 @@ public final class ControleurExplorateur {
     // type. Ce type devra avoir une méthode "arreter()", "jouer()" et
     // "getDureeSecondes()"
     private IJouable enLecture;
+    private ServiceFormatage format = new ServiceFormatage();
 
     /**
      * Relie les callbacks de la vue et affiche le dossier initial.
@@ -72,7 +74,7 @@ public final class ControleurExplorateur {
 
         if (element instanceof IJouable jouable) {
             vue.afficherLecteur(true, element.getNom() + " — "
-                    + jouable.getDureeSecondes() + " secondes");
+                    + format.formaterDuree(jouable.getDureeSecondes()));
         } else {
             vue.afficherLecteur(false, "");
         }
