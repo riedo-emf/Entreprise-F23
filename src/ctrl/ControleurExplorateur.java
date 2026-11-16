@@ -5,6 +5,7 @@ import java.util.Comparator;
 import models.*;
 import services.ComparateurDatePuisTaille;
 import services.ComparateurTaille;
+import services.Historique;
 import views.VueExplorateur;
 
 /**
@@ -20,10 +21,17 @@ public final class ControleurExplorateur {
 
     private Dossier courant;
 
-    // Référence du media en cours de lecture; null si aucun. 
+    // Référence du media en cours de lecture; null si aucun.
     // type. Ce type devra avoir une méthode "arreter()", "jouer()" et
     // "getDureeSecondes()"
     private IJouable enLecture;
+    
+    // référence au service Historique
+    private Historique his;
+
+    // suivant / precedent
+    private boolean suivant;
+    private boolean precedent;
 
     /**
      * Relie les callbacks de la vue et affiche le dossier initial.
@@ -34,6 +42,9 @@ public final class ControleurExplorateur {
      */
     public ControleurExplorateur(VueExplorateur vue, Dossier racine) {
         this.vue = vue;
+        this.his = new Historique(racine);
+        suivant = false;
+        precedent = false;
         courant = racine;
         vue.surSelection(this::selectionner);
         vue.surTri(this::afficher);
@@ -42,6 +53,8 @@ public final class ControleurExplorateur {
         vue.surImprimer(this::imprimer);
         vue.surJouer(this::jouer);
         vue.surArreter(this::arreter);
+        vue.surPrecedent(this::precedent);
+        vue.surSuivant(this::suivant);
         afficher();
     }
 
@@ -66,7 +79,7 @@ public final class ControleurExplorateur {
         Element element = vue.getSelection();
 
         boolean imprimable = element instanceof IImprimable;
-        boolean estUnDossier = element instanceof Dossier; 
+        boolean estUnDossier = element instanceof Dossier;
 
         vue.afficherActions(imprimable, estUnDossier);
 
@@ -84,6 +97,10 @@ public final class ControleurExplorateur {
     private void remonter() {
         if (courant.getParent() != null) {
             courant = courant.getParent();
+            his.ajouterDos(courant);
+            suivant = his.suivantPossible();
+            precedent = his.precedentPossible();
+            vue.afficherHistorique(precedent, suivant);
             afficher();
         }
     }
@@ -92,9 +109,13 @@ public final class ControleurExplorateur {
      * Ouvre la sélection si elle désigne un dossier.
      */
     private void ouvrir() {
-        
+
         if (vue.getSelection() instanceof Dossier dossier) {
             courant = dossier;
+            his.ajouterDos(dossier); // actualiser l'historique
+            precedent = true;
+            suivant = false;
+            vue.afficherHistorique(precedent, suivant);
             afficher();
         }
     }
@@ -105,7 +126,7 @@ public final class ControleurExplorateur {
     private void imprimer() {
         Element e = vue.getSelection();
         if (e instanceof IImprimable) {
-            
+
             IImprimable imprimable = (IImprimable) e;
             vue.afficherStatut(imprimable.imprimer());
         }
@@ -116,9 +137,9 @@ public final class ControleurExplorateur {
      */
     private void jouer() {
         Element e = vue.getSelection();
-        
+
         if (e instanceof IJouable) {
-            
+
             IJouable jouable = (IJouable) e;
             enLecture = jouable;
             vue.afficherStatut(jouable.jouer());
@@ -131,7 +152,7 @@ public final class ControleurExplorateur {
     private void arreter() {
         Element e = vue.getSelection();
         if (e instanceof IJouable) {
-            
+
             IJouable jouable = (IJouable) e;
             vue.afficherStatut(jouable.arreter());
             enLecture = null;
@@ -167,5 +188,19 @@ public final class ControleurExplorateur {
         }
         vue.afficherChemin(emplacement + "/", courant.getParent() != null);
         actualiserActions();
+    }
+    public void precedent(){
+        courant = his.precedent();
+        suivant = his.suivantPossible();
+        precedent = his.precedentPossible();
+        afficher();
+        vue.afficherHistorique(precedent, suivant);
+    }
+    public void suivant(){
+        courant = his.suivant();
+        suivant = his.suivantPossible();
+        precedent = his.precedentPossible();
+        afficher();
+        vue.afficherHistorique(precedent, suivant);
     }
 }
