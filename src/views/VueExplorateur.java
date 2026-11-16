@@ -130,7 +130,8 @@ public final class VueExplorateur extends JFrame {
     /** @param action action appelée lorsque la sélection change */
     public void surSelection(Runnable action) {
         liste.addListSelectionListener(evenement -> {
-            if (!evenement.getValueIsAdjusting()) action.run();
+            if (!evenement.getValueIsAdjusting())
+                action.run();
         });
     }
 
@@ -228,7 +229,8 @@ public final class VueExplorateur extends JFrame {
     }
 
     /**
-     * Affiche le lecteur en appliquant le formateur de durée fourni par le contrôleur.
+     * Affiche le lecteur en appliquant le formateur de durée fourni par le
+     * contrôleur.
      */
     public void afficherLecteur(boolean visible, String nom, int dureeSecondes) {
         afficherLecteur(visible,
@@ -239,7 +241,7 @@ public final class VueExplorateur extends JFrame {
     public void setFormateurTaille(LongFunction<String> formateur) {
         formateurTaille = formateur;
         liste.repaint();
-    }
+    }// sneakyballs
 
     /** Installe le formateur utilisé pour les durées du lecteur. */
     public void setFormateurDuree(IntFunction<String> formateur) {

@@ -3,6 +3,7 @@ package app;
 import javax.swing.SwingUtilities;
 import ctrl.ControleurExplorateur;
 import services.DonneesExemple;
+import services.Historique;
 import views.VueExplorateur;
 
 /** Point d'entrée Swing de l'application. */
@@ -16,6 +17,8 @@ public final class App {
      * @param args arguments non utilisés
      */
     public static void main(String[] args) {
+
+        
         SwingUtilities.invokeLater(() -> {
             VueExplorateur vue = new VueExplorateur();
             new ControleurExplorateur(vue, DonneesExemple.creerRacine());
@@ -23,3 +26,5 @@ public final class App {
         });
     }
 }
+
+
