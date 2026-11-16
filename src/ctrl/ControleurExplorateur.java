@@ -6,6 +6,7 @@ import models.*;
 import services.ComparateurDatePuisTaille;
 import services.ComparateurTaille;
 import views.VueExplorateur;
+import services.ServiceIndexationFichiers;
 
 /**
  * Coordonne les événements de la vue, la navigation, les tris et les actions du
@@ -42,9 +43,21 @@ public final class ControleurExplorateur {
         vue.surImprimer(this::imprimer);
         vue.surJouer(this::jouer);
         vue.surArreter(this::arreter);
+        vue.surRechercheIndex(this::IndexationFichiers);
         afficher();
     }
 
+    /**
+     * inplémentatino Service indexation Fifhier 
+     * 
+     */
+    private void IndexationFichiers(){
+        ServiceIndexationFichiers index = new ServiceIndexationFichiers();
+        ArrayList<Fichier> poisson = index.initialiseFiles(courant);
+        index.initialiseList(poisson);
+        ArrayList<Element> poisson2 = new ArrayList<>(index.getFilesListType(vue.getTypeRecherche()));
+        vue.afficherElements(poisson2);
+    }
     /**
      * Arrête la lecture en cours et adapte les actions à la nouvelle sélection.
      */
